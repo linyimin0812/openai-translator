@@ -514,6 +514,7 @@ export async function translate(query: TranslateQuery) {
                 let resp
                 try {
                     resp = JSON.parse(msg)
+                    console.log("hhhhh: " + msg);
                     // eslint-disable-next-line no-empty
                 } catch {
                     query.onFinish('stop')
@@ -522,13 +523,16 @@ export async function translate(query: TranslateQuery) {
                 if (!conversationId) {
                     conversationId = resp.conversation_id
                 }
-                const { finish_details: finishDetails } = resp.messages
+                if (!resp.message) {
+                    return
+                }
+                const { finish_details: finishDetails } = resp.message
                 if (finishDetails) {
                     query.onFinish(finishDetails.type)
                     return
                 }
 
-                const { content, author } = resp.messages
+                const { content, author } = resp.message
                 if (author.role === 'assistant') {
                     const targetTxt = content.parts.join('')
                     let textDelta = targetTxt.slice(length)
